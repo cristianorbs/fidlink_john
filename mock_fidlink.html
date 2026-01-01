@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fidl.ink — Links de produtos por post</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #fafafa;
+      color: #222;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    /* NAV / TABS */
+    nav {
+      display: flex;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      color: #777;
+      border-bottom: 2px solid transparent;
+    }
+    nav button.active {
+      font-weight: 600;
+      color: #000;
+      border-bottom: 2px solid #000;
+    }
+
+    /* PROFILE */
+    header {
+      background: #fff;
+    }
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+    }
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .profile-info h1 {
+      font-size: 16px;
+      margin: 0;
+    }
+    .profile-info p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #555;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      border-top: 1px solid #eee;
+    }
+    .stat {
+      text-align: center;
+      font-size: 12px;
+      color: #555;
+    }
+    .stat strong {
+      display: block;
+      font-size: 15px;
+      color: #000;
+    }
+
+    /* FEED */
+    .feed {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .post {
+      aspect-ratio: 1 / 1;
+      position: relative;
+      cursor: pointer;
+    }
+    .post img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .post::after {
+      content: "links";
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      font-size: 11px;
+      padding: 4px 6px;
+      border-radius: 10px;
+    }
+
+    /* PRODUCTS LIST */
+    .products-page {
+      padding: 16px;
+    }
+    .products {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .product {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+    .product-info {
+      font-size: 14px;
+    }
+    .product-info strong {
+      display: block;
+    }
+    .product-info span {
+      font-size: 12px;
+      color: #666;
+    }
+    .product a {
+      background: #111;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* MODAL */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: #fff;
+      width: 100%;
+      max-width: 420px;
+      max-height: 100vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: #fff;
+    }
+    .modal-header h2 {
+      font-size: 15px;
+      margin: 0;
+    }
+    .close {
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .modal-body {
+      padding: 16px;
+    }
+    .modal-body img {
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="profile">
+    <img class="avatar" src="profile.jpg" />
+    <div class="profile-info">
+      <h1>@johncolorindo</h1>
+      <p>Links de produtos usados em cada post</p>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat"><strong>128</strong>posts</div>
+    <div class="stat"><strong>42</strong>produtos</div>
+    <div class="stat"><strong>9</strong>kits</div>
+  </div>
+</header>
+
+<nav>
+  <button id="tabFeed" class="active" onclick="showFeed()">Feed</button>
+  <button id="tabProducts" onclick="showProducts()">Produtos usados</button>
+</nav>
+
+<div class="container">
+
+  <div id="feedPage">
+    <div class="feed">
+      <div class="post" onclick="openPost(0)"><img src="thumbnail_1.jpg"></div>
+      <div class="post" onclick="openPost(1)"><img src="thumbnail_2.jpg"></div>
+      <div class="post" onclick="openPost(2)"><img src="thumbnail_3.jpg"></div>
+      <div class="post" onclick="openPost(3)"><img src="thumbnail_4.jpg"></div>
+      <div class="post" onclick="openPost(4)"><img src="thumbnail_5.jpg"></div>
+      <div class="post" onclick="openPost(5)"><img src="thumbnail_6.jpg"></div>
+    </div>
+  </div>
+
+  <div id="productsPage" class="products-page" style="display:none">
+    <h2 style="font-size:16px;margin:0 0 6px">Produtos já usados neste perfil</h2>
+    <p style="font-size:13px;color:#666;margin:0 0 12px">Links importados e organizados a partir dos posts</p>
+    <div class="products" id="allProducts"></div>
+  </div>
+
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle"></h2>
+      <span class="close" onclick="closeModal()">×</span>
+    </div>
+    <div class="modal-body">
+      <img id="modalImage" />
+      <h3 style="font-size:14px;margin:0 0 8px">Produtos usados neste post</h3>
+      <div class="products" id="productList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const allProducts = [
+    { name: "Ohuhu e Bobbie Goods 48 cores", note: "Usado em vários posts", link: "https://produto.mercadolivre.com.br/MLB-4333741599-ohuhu-kit-caneta-marcador-ponta-dupla-48-pastel-cores-_JM#polycard_client=social-profile-middleend&source=lists&type=item&tracking_id=7dcae31c-261d-4cc1-a6e2-f51c0aafdb63" },
+    { name: "Bloco Marker A4", note: "Compatível com marcadores", link: "#" },
+    { name: "Lápis Polychromos", note: "Cores intensas", link: "#" },
+    { name: "Caneta Sakura Micron", note: "Traço consistente", link: "#" },
+    { name: "Pastel seco Pentel", note: "Bom para degradês", link: "#" }
+  ];
+
+  const posts = [
+    { title: "Volta às aulas", image: "thumbnail_1.jpg", products: [0] },
+    { title: "Valeu Natalina", image: "thumbnail_2.jpg", products: [2] },
+    { title: "Sketch diário", image: "thumbnail_3.jpg", products: [3] },
+    { title: "Teste de pastel", image: "thumbnail_4.jpg", products: [4] },
+    { title: "Livro botânico", image: "thumbnail_5.jpg", products: [2] },
+    { title: "Organização", image: "thumbnail_6.jpg", products: [1] }
+  ];
+
+  function setActiveTab(tab) {
+    document.getElementById('tabFeed').classList.remove('active');
+    document.getElementById('tabProducts').classList.remove('active');
+    document.getElementById(tab).classList.add('active');
+  }
+
+  function showFeed() {
+    setActiveTab('tabFeed');
+    document.getElementById('feedPage').style.display = 'block';
+    document.getElementById('productsPage').style.display = 'none';
+  }
+
+  function showProducts() {
+    setActiveTab('tabProducts');
+    document.getElementById('feedPage').style.display = 'none';
+    const list = document.getElementById('allProducts');
+    list.innerHTML = '';
+    allProducts.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'product';
+      div.innerHTML = `<div class="product-info"><strong>${p.name}</strong><span>${p.note}</span></div><a href="${p.link}" target="_blank">Comprar</a>`;
+      list.appendChild(div);
+    });
+    document.getElementById('productsPage').style.display = 'block';
+  }
+
+  function openPost(index) {
+    const post = posts[index];
+    document.getElementById('modalTitle').innerText = post.title;
+    document.getElementById('modalImage').src = post.image;
+    const list = document.getElementById('productList');
+    list.innerHTML = '';
+    post.products.forEach(i => {
+      const p = allProducts[i];
+      const div = document.createElement('div');
+      div.className = 'product';
+      div.innerHTML = `<div class="product-info"><strong>${p.name}</strong><span>${p.note}</span></div><a href="${p.link}" target="_blank">Comprar</a>`;
+      list.appendChild(div);
+    });
+    document.getElementById('modal').classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+  }
+</script>
+
+</body>
+</html>
